@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Database</title>
+</head>
+<body>
+    <ul>
+    {% for employee in employees %}
+        <li>
+            <h3><a href="/profile/{{ employee['id'] }}">{{ employee.lastname }} {{ employee.firstname }} {{ employee.patronym }}<a></h3>
+            {{ employee.jobname }} of {{ employee.company }}
+        </li>
+    {% endfor %}
+    </ul>
+    <br>
+    <a href="/add_profile">Add employee profile</a>
+</body>
+</html>

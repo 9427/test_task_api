@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile of {{ data.lastname }} {{ data.firstname }}</title>
+</head>
+<body>
+    <h2>{{ data["lastname"] }} {{ data["firstname"] }} {{ data["patronym"] }}</h2><br>
+    Born in {{ data["birthyear"] }}, employee ID {{ data["id"] }}<br>
+    Position: {{ data["jobname"] }}<br>
+    Salary: {{ data["salary"] }}<br>
+    Department: {{ data["department"] }}<br>
+    Company: {{ data["company"] }}<br>
+    <br>
+    <a href="/">Back to start</a><br>
+    <a href="/profile/{{ data['id'] }}/edit">Edit profile</a><br>
+    <a href="/profile/{{ data['id'] }}/delete">Delete profile</a><br>
+</body>
+</html>

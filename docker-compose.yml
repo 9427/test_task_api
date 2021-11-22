@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+        db:
+                image: postgres
+                ports:
+                        - "5432:5432"
+                environment:
+                        - POSTGRES_USER=postgres
+                        - POSTGRES_PASSWORD=postgres
+                        - POSTGRES_DB=db
+                volumes:
+                        - ./dbs/postgres-data:/var/lib/postgresql
+        backend:
+                container_name: flask_app
+                build: ./flask_app
+                command: bash -c "
+                        sleep 0.5 &&
+                        python3 init_db.py &&
+                        sleep 0.5 &&
+                        python3 app.py";
+                volumes:
+                        - ./flask_app:/flask_app
+                ports:
+                        - "127.0.0.1:5000:5000"
+                depends_on:
+                        - db
