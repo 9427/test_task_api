@@ -31,7 +31,7 @@ def api_filter_employees():
             query = query + field_name + '=(%s) AND '
             params.append(filter_args.get(field_name))
     if not params:
-        raise Exception('No valid filters in request')
+        raise Exception('No valid filters in request. Accepts the following filters: id, firstname, lastname, patronym')
     query = query[:-4] + ';'
     employees = db_request(query, params)
     if not employees:

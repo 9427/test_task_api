@@ -116,8 +116,7 @@ def assemble_update_request(args):
 def assemble_delete_request(args):
     params = []
     query = "SELECT * FROM employees WHERE "
-    filter_fields = FIELD_TYPES.keys()
-    for field_name in filter_fields:
+    for field_name in FIELD_TYPES.keys():
         if args.get(field_name):
             query = query + field_name + '=(%s) AND '
             params.append(args.get(field_name))
