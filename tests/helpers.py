@@ -1,6 +1,5 @@
-import random
+import pytest
 import requests
-import time
 
 API_ROUTE = 'http://backend:5000/api/v1/employees'
 DEFAULT_VALS = {
@@ -16,34 +15,23 @@ DEFAULT_VALS = {
 }
 
 
-def create_query(query_vals):
-    """ Создать запрос к API из словаря
-
-    :param query_vals: словарь с аргументами
-    """
-    query = '?'
-    for key in query_vals.keys():
-        query = query + str(key) + '=' + str(query_vals[key]) + '&'
-    return query[:-1]
+@pytest.fixture
+def increment_id():
+    DEFAULT_VALS['id'] += 1
+    return DEFAULT_VALS
 
 
-def get(query, timeout=5, max_retries=5, backoff_factor=0.3):
-    """ Выполнить GET-запрос
-
-    :param query: запрос с адресом
-    :param timeout: максимальное время ожидания ответа от сервера
-    :param max_retries: максимальное число повторных запросов
-    :param backoff_factor: коэффициент экспоненциального нарастания задержки
-    """
-    delay = 0
-    query = API_ROUTE + query
-    for i in range(max_retries):
-        try:
-            response = requests.get(query)
-            return response.json()
-        except:
-            pass
-        time.sleep(delay)
-        delay = min(delay * backoff_factor, timeout)
-        delay += random.random()
+def request(method, params=None, route_id=0, timeout=5):
+    if route_id:
+        route = API_ROUTE + '/' + str(route_id)
+    else:
+        route = API_ROUTE
+    if method == 'GET':
+        response = requests.get(route, params=params, timeout=timeout)
+    elif method == 'POST':
+        response = requests.post(route, params=params, timeout=timeout)
+    elif method == 'PATCH':
+        response = requests.patch(route, params=params, timeout=timeout)
+    elif method == 'DELETE':
+        response = requests.delete(route, params=params, timeout=timeout)
     return response

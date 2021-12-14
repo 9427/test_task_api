@@ -1,39 +1,37 @@
-from helpers import get, create_query, DEFAULT_VALS
+from helpers import request, DEFAULT_VALS, increment_id
 
 
 def test_read_all():
-    response = get('/all')
-    assert response['result']
+    response = request('GET')
+    assert response.json()['result']
+    assert response.status_code == 200
 
 
-def test_add_employee():
-    DEFAULT_VALS['id'] += 1
-    response = get('/add' + create_query(DEFAULT_VALS))
-    assert response['result']
+def test_add_employee(increment_id):
+    response = request('POST', DEFAULT_VALS)
+    assert response.status_code == 201
 
 
-def test_search_employee():
-    DEFAULT_VALS['id'] += 1
-    get('/add' + create_query(DEFAULT_VALS))
-    response = get(create_query(DEFAULT_VALS))
-    assert response['result'][0]['jobname'] == DEFAULT_VALS['jobname']
+def test_search_employee(increment_id):
+    request('POST', DEFAULT_VALS)
+    response = request('GET', DEFAULT_VALS)
+    assert response.json()['result'][0]['jobname'] == DEFAULT_VALS['jobname']
+    assert response.status_code == 200
 
 
-def test_update_employee():
-    DEFAULT_VALS['id'] += 1
-    get('/add' + create_query(DEFAULT_VALS))
-    query_vals = {'search_id': DEFAULT_VALS['id'], 'salary': 180000}
-    get('/update' + create_query(query_vals))
-    query_vals = {'id': DEFAULT_VALS['id']}
-    response = get(create_query(query_vals))
-    assert response['result'][0]['salary'] == 180000
+def test_update_employee(increment_id):
+    request('POST', DEFAULT_VALS)
+    new_salary = DEFAULT_VALS['salary'] + 100000
+    request('PATCH', {'salary': new_salary}, route_id=DEFAULT_VALS['id'])
+    response = request('GET', {'id': DEFAULT_VALS['id']})
+    assert response.json()['result'][0]['salary'] == new_salary
+    assert response.status_code == 200
 
 
-def test_delete_employee():
-    DEFAULT_VALS['id'] += 1
-    print(get('/add' + create_query(DEFAULT_VALS)))
-    response = get('/delete' + create_query(DEFAULT_VALS))
-    print(response)
-    assert response['result']
-    response = get(create_query(DEFAULT_VALS))
-    assert response['error']
+def test_delete_employee(increment_id):
+    request('POST', DEFAULT_VALS)
+    response = request('DELETE', route_id=DEFAULT_VALS['id'])
+    assert response.status_code == 204
+    response = request('GET', {'id': DEFAULT_VALS['id']})
+    assert response.json()['error']
+    assert response.status_code == 404
